@@ -2,13 +2,13 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import AllowAny, IsAdminUser
 
 from cars.models import Car, CarFeature, CarImage
-from cars.serializers import (
-    CarSerializer,
-    CarCreateUpdateSerializer,
-    CarFeatureSerializer,
+from cars.serializers.car import CarCreateUpdateSerializer, CarSerializer
+from cars.serializers.car_feature import (
     CarFeatureCreateSerializer,
-    CarImageSerializer,
+    CarFeatureSerializer,
+    CarFeatureUpdateSerializer
 )
+from cars.serializers.car_image import CarImageSerializer
 
 
 class CarsViewSet(viewsets.ModelViewSet):
@@ -21,7 +21,7 @@ class CarsViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
-        elif self.request.method in ["POST", "UPDATE", "DESTROY"]:
+        elif self.request.method in ["POST", "PATCH", "PUT", "DELETE"]:
             return [IsAdminUser()]
         return [permission() for permission in self.permission_classes]
 
@@ -30,7 +30,7 @@ class CarsViewSet(viewsets.ModelViewSet):
             return CarSerializer
         elif self.request.method == "POST":
             return CarCreateUpdateSerializer
-        elif self.request.method == "UPDATE":
+        elif self.action == "update":
             return CarCreateUpdateSerializer
 
     def get_queryset(self):
@@ -49,7 +49,7 @@ class FeaturesViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
-        elif self.request.method in ["POST", "UPDATE", "DESTROY"]:
+        elif self.request.method in ["POST", "PUT", "PATCH", "DELETE"]:
             return [IsAdminUser()]
         return [permission() for permission in self.permission_classes]
 
@@ -58,6 +58,8 @@ class FeaturesViewSet(viewsets.ModelViewSet):
             return CarFeatureSerializer
         elif self.request.method == "POST":
             return CarFeatureCreateSerializer
+        elif self.action == "update":
+            return CarFeatureUpdateSerializer
 
 
 class CarImagesViewSet(viewsets.ModelViewSet):
@@ -68,6 +70,6 @@ class CarImagesViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
-        elif self.request.method in ["POST", "UPDATE", "DESTROY"]:
+        elif self.request.method in ["POST", "DELETE", "PUT", "PATCH"]:
             return [IsAdminUser()]
         return [permission() for permission in self.permission_classes]
